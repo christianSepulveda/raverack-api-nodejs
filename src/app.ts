@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import authRoutes from "./interfaces/routes/AuthRoutes";
 import boxNumberRoutes from "./interfaces/routes/BoxNumberRoutes";
 import initSequelizeServer from "./interfaces/config/init-sequelize-server";
+import CreateDefaultUser from "./interfaces/config/create-default-user";
 
 dotenv.config();
 
@@ -11,6 +12,8 @@ const port = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use("/user", authRoutes);
-app.use("/boxnumber", boxNumberRoutes)
+app.use("/boxnumber", boxNumberRoutes);
 
 initSequelizeServer(app, port);
+
+(async () => await CreateDefaultUser())();
