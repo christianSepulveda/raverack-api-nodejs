@@ -18,6 +18,13 @@ export class SequelizeCustomerRepository implements CustomerRepository {
     return customer.dataValues;
   }
 
+  async findAll(): Promise<Customer[]> {
+    const customers = await CustomerModel.findAll();
+    if (customers.length === 0) return [] as Customer[];
+
+    return customers.map((customer) => customer.dataValues);
+  }
+
   async save(customer: Customer): Promise<Customer | Error> {
     const customerExists = await this.findByRut(customer.rut);
     if (customerExists) return customerExists;
