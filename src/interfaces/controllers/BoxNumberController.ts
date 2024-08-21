@@ -53,7 +53,7 @@ export class BoxNumberController {
         await createBoxNumber.execute(boxNumber);
       }
 
-      res.status(201).json([{ created: true, added: numberOfBoxes }]);
+      res.status(200).json([{ created: true, added: numberOfBoxes }]);
     } catch (error: any) {
       console.log(error);
       res.status(500);
