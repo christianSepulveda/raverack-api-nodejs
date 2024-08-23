@@ -48,6 +48,7 @@ export class BoxNumberController {
           boxnumber: newBoxNumber,
           available: true,
           customerid: null,
+          customer: null,
         };
 
         await createBoxNumber.execute(boxNumber);
