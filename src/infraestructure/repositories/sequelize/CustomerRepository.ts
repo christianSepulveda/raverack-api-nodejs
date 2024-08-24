@@ -25,6 +25,16 @@ export class SequelizeCustomerRepository implements CustomerRepository {
     return customers.map((customer) => customer.dataValues);
   }
 
+  async updateCustomer(currentCustomer: Customer): Promise<Customer | Error> {
+    const customer = await CustomerModel.findOne({
+      where: { rut: currentCustomer.rut },
+    });
+    if (!customer) return { message: "Customer not found" };
+
+    const updatedCustomer = await customer.update({ ...currentCustomer });
+    return updatedCustomer.dataValues;
+  }
+
   async save(customer: Customer): Promise<Customer | Error> {
     const customerExists = await this.findByRut(customer.rut);
     if (customerExists) return customerExists;

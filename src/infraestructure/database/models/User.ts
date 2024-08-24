@@ -5,7 +5,8 @@ class UserModel extends Model {
   public id!: string;
   public username!: string;
   public password!: string;
-  public active!: boolean;	
+  public phoneNumber!: string;
+  public active!: boolean;
 }
 
 UserModel.init(
@@ -26,7 +27,7 @@ UserModel.init(
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: true,
-    }
+    },
   },
   {
     sequelize: instance,

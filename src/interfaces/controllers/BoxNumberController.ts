@@ -108,8 +108,7 @@ export class BoxNumberController {
 
       console.log(fullname, rut, boxNumber);
 
-      if (!boxNumber)
-        res.status(400).json([{ error: "Invalid data" }]);
+      if (!boxNumber) res.status(400).json([{ error: "Invalid data" }]);
 
       const customer = await findCustomerByRut.execute(rut);
       if (!customer) {
@@ -117,6 +116,7 @@ export class BoxNumberController {
           id: uuidv4(),
           fullname,
           rut,
+          phoneNumber: "",
         })) as Customer;
       }
 
@@ -136,7 +136,14 @@ export class BoxNumberController {
         !currentBoxNumber.available ? undefined : customerId
       );
 
-      res.status(200).json([{ updatedBoxNumber: boxNumber, released : !currentBoxNumber.available }]);
+      res
+        .status(200)
+        .json([
+          {
+            updatedBoxNumber: boxNumber,
+            released: !currentBoxNumber.available,
+          },
+        ]);
     } catch (error: any) {
       console.log(error);
       res.status(500);
