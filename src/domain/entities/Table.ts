@@ -3,7 +3,7 @@ export interface Table {
   state: string;
   number: number;
   capacityId: string;
-  customerId?: string;
+  customerId?: string | null;
 }
 
 export interface TableInitValues {

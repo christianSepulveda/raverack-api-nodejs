@@ -6,7 +6,7 @@ class TableModel extends Model {
   public state!: string;
   public number!: number;
   public capacityId!: string;
-  public custiomerId!: string;
+  public custiomerId!: string | null;
 }
 
 TableModel.init(
@@ -26,7 +26,7 @@ TableModel.init(
     },
     customerId: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
   },
   {
