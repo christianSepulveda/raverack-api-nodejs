@@ -3,8 +3,9 @@ import instance from "../sequelize";
 
 class TableModel extends Model {
   public id!: string;
+  public state!: string;
   public number!: number;
-  public capacity!: number;
+  public capacityId!: string;
   public custiomerId!: string;
 }
 
@@ -14,12 +15,13 @@ TableModel.init(
       type: DataTypes.STRING,
       primaryKey: true,
     },
+    state: { type: DataTypes.STRING, allowNull: false },
     number: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    capacity: {
-      type: DataTypes.INTEGER,
+    capacityId: {
+      type: DataTypes.STRING,
       allowNull: false,
     },
     customerId: {

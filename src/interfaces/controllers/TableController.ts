@@ -25,7 +25,12 @@ export class TableController {
 
   async createTable(req: Request, res: Response): Promise<void> {
     try {
-      const table = await createTable.execute(req.body);
+      const { number, state, tableCapacityNumber } = req.body;
+
+      const table = await createTable.execute(
+        { number, state },
+        tableCapacityNumber
+      );
       if (!table) res.status(400).send({ message: "Cannot create table" });
       if (table) res.status(200).send(table);
 

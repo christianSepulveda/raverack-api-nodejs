@@ -1,19 +1,58 @@
 import { Error } from "../../../domain/entities/Error";
-import { Table } from "../../../domain/entities/Table";
+import { Table, TableInitValues } from "../../../domain/entities/Table";
+import { TableCapacity } from "../../../domain/entities/TableCapacity";
+import { v4 as uuidv4 } from "uuid";
 
 import { TableRepository } from "../../../domain/repositories/TableRepostiroy";
 import TableModel from "../../database/models/Table";
+import { SequelizeTableCapacityRepository } from "./TableCapacityRepository";
+
+const tableCapacityRepository = new SequelizeTableCapacityRepository();
 
 export class SequelizeTableRepository implements TableRepository {
-  async save(table: Table): Promise<Table | Error> {
+  async save(
+    table: TableInitValues,
+    tableCapacityNumber: number
+  ): Promise<Table | Error> {
     const tableExists = await TableModel.findOne({
       where: { number: table.number },
     });
     if (tableExists) return { message: "Table already exists" };
 
-    const newTable = await TableModel.create({ ...table });
-    if (!newTable) return { message: "Cannot create table" };
+    const tableCapacity = await tableCapacityRepository.findAll();
+    const tableCapacityNumberExists = tableCapacity.find(
+      (tc) => tc.capacity === tableCapacityNumber
+    );
 
+    if (!tableCapacityNumberExists) {
+      const id = uuidv4();
+
+      tableCapacityRepository.save({
+        id,
+        capacity: tableCapacityNumber,
+        active: true,
+      });
+
+      const newTable = await TableModel.create({
+        id: uuidv4(),
+        state: table.state,
+        number: table.number,
+        capacityId: id,
+        customerId: null,
+      });
+
+      return newTable;
+    }
+
+    const newTable = await TableModel.create({
+      id: uuidv4(),
+      state: table.state,
+      number: table.number,
+      capacityId: tableCapacityNumberExists.id,
+      customerId: null,
+    });
+    
+    if (!newTable) return { message: "Cannot create table" };
     return newTable;
   }
 
@@ -24,7 +63,8 @@ export class SequelizeTableRepository implements TableRepository {
 
   async updateStatus(
     tableId: string,
-    custiomerId?: string
+    custiomerId?: string,
+    tableCapacityNumber?: number
   ): Promise<Table | Error> {
     const table = await TableModel.findOne({ where: { id: tableId } });
     if (!table) return { message: "Table not found" };

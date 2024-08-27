@@ -1,8 +1,15 @@
 import { Error } from "../entities/Error";
-import { Table } from "../entities/Table";
+import { Table, TableInitValues } from "../entities/Table";
 
 export interface TableRepository {
   findAll(): Promise<Table[]>;
-  updateStatus(tableId: string, customerId?: string): Promise<Table | Error>;
-  save(table: Table): Promise<Table | Error>;
+  updateStatus(
+    tableId: string,
+    customerId?: string,
+    tableCapacityNumber?: number
+  ): Promise<Table | Error>;
+  save(
+    initValues: TableInitValues,
+    tableCapacityNumber: number
+  ): Promise<Table | Error>;
 }
