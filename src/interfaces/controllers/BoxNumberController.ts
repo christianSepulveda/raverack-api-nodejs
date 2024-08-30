@@ -30,6 +30,7 @@ export class BoxNumberController {
   async CreateBoxesNumbers(req: Request, res: Response): Promise<void> {
     try {
       const numberOfBoxes = req.body.numberOfBoxes;
+      const companyId = req.body.companyid;
 
       if (!numberOfBoxes || numberOfBoxes < 1) {
         res.status(400).json([{ error: "Invalid number of boxes" }]);
@@ -37,7 +38,8 @@ export class BoxNumberController {
       }
 
       const currentBoxes = (await findBoxNumber.execute(
-        undefined
+        undefined,
+        companyId
       )) as BoxNumber[];
       const numberOfCurrentBoxes = currentBoxes.length;
 
@@ -49,9 +51,10 @@ export class BoxNumberController {
           available: true,
           customerid: null,
           customer: null,
+          companyid: req.body.companyid,
         };
 
-        await createBoxNumber.execute(boxNumber);
+        await createBoxNumber.execute(boxNumber, req.body.companyid);
       }
 
       res.status(200).json([{ created: true, added: numberOfBoxes }]);
@@ -64,16 +67,18 @@ export class BoxNumberController {
   async GetBoxNumber(req: Request, res: Response): Promise<void> {
     try {
       const boxNumber = req.body.boxNumber;
+      const companyId = req.body.companyid;
 
       if (!boxNumber) {
-        const boxNumbers = await findBoxNumber.execute(undefined);
+        const boxNumbers = await findBoxNumber.execute(undefined, companyId);
         res.status(200).json(boxNumbers);
         return;
       }
 
       if (boxNumber) {
         const boxNumbers = (await findBoxNumber.execute(
-          Number(boxNumber)
+          Number(boxNumber),
+          undefined
         )) as BoxNumber & Error;
 
         if (boxNumbers.message) {
@@ -103,7 +108,7 @@ export class BoxNumberController {
 
   async UpdateBoxNumberStatus(req: Request, res: Response): Promise<void> {
     try {
-      const { fullname, rut, boxNumber } = req.body;
+      const { fullname, rut, boxNumber, companyid } = req.body;
       let newCustomer = {} as Customer;
 
       console.log(fullname, rut, boxNumber);
@@ -117,11 +122,13 @@ export class BoxNumberController {
           fullname,
           rut,
           phoneNumber: "",
+          companyid,
         })) as Customer;
       }
 
       const currentBoxNumber = (await findBoxNumber.execute(
-        Number(boxNumber)
+        Number(boxNumber),
+        undefined
       )) as BoxNumber & Error;
 
       if (currentBoxNumber.message) {
@@ -136,14 +143,12 @@ export class BoxNumberController {
         !currentBoxNumber.available ? undefined : customerId
       );
 
-      res
-        .status(200)
-        .json([
-          {
-            updatedBoxNumber: boxNumber,
-            released: !currentBoxNumber.available,
-          },
-        ]);
+      res.status(200).json([
+        {
+          updatedBoxNumber: boxNumber,
+          released: !currentBoxNumber.available,
+        },
+      ]);
     } catch (error: any) {
       console.log(error);
       res.status(500);

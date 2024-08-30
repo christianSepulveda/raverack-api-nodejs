@@ -7,6 +7,7 @@ class UserModel extends Model {
   public password!: string;
   public phoneNumber!: string;
   public active!: boolean;
+  public companyid!: string;
 }
 
 UserModel.init(
@@ -27,6 +28,10 @@ UserModel.init(
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: true,
+    },
+    companyid: {
+      type: DataTypes.STRING,
+      allowNull: false,
     },
   },
   {

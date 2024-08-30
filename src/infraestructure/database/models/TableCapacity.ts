@@ -5,6 +5,7 @@ class TableCapacityModel extends Model {
   public id!: string;
   public capacity!: number;
   public active!: boolean;
+  public companyid!: string;
 }
 
 TableCapacityModel.init(
@@ -20,6 +21,10 @@ TableCapacityModel.init(
     },
     active: {
       type: DataTypes.BOOLEAN,
+      allowNull: false,
+    },
+    companyid: {
+      type: DataTypes.STRING,
       allowNull: false,
     },
   },

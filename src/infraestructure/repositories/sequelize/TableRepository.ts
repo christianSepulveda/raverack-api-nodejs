@@ -31,12 +31,14 @@ export class SequelizeTableRepository implements TableRepository {
         id,
         capacity: tableCapacityNumber,
         active: true,
+        companyid: table.companyid,
       });
 
       const newTable = await TableModel.create({
         id: uuidv4(),
         state: table.state,
         number: table.number,
+        companyid: table.companyid,
         capacityId: id,
         customerId: null,
       });
@@ -51,7 +53,7 @@ export class SequelizeTableRepository implements TableRepository {
       capacityId: tableCapacityNumberExists.id,
       customerId: null,
     });
-    
+
     if (!newTable) return { message: "Cannot create table" };
     return newTable;
   }

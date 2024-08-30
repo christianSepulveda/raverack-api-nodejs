@@ -9,21 +9,28 @@ const customerRepository = new SequelizeCustomerRepository();
 const getAllCustomers = new FindAllCustomers(customerRepository);
 
 export class SequelizeBoxNumberRepository implements BoxNumberRepository {
-  async saveBoxNumber(boxnumber: BoxNumber): Promise<BoxNumber | Error> {
+  async saveBoxNumber(
+    boxnumber: BoxNumber,
+    companyid: string
+  ): Promise<BoxNumber | Error> {
     const boxNumberExists = await BoxNumberModel.findOne({
-      where: { boxnumber: boxnumber.boxnumber },
+      where: { boxnumber: boxnumber.boxnumber, companyid },
     });
     if (boxNumberExists) return { message: "Box number already exists" };
 
     const boxNumber = await BoxNumberModel.create({ ...boxnumber });
     if (!boxNumber) return { message: "Cannot create box number" };
 
-    return { ...boxNumber, customer: null };
+    return { ...boxNumber, customer: null, companyid };
   }
 
-  async findAllBoxNumber(): Promise<BoxNumber[] | Error> {
+  async findAllBoxNumber(companyid: string): Promise<BoxNumber[] | Error> {
     const response = [] as BoxNumber[];
-    const boxNumbers = await BoxNumberModel.findAll();
+    const allBoxNumbers = await BoxNumberModel.findAll();
+
+    const boxNumbers = allBoxNumbers.filter(
+      (box) => box.companyid === companyid
+    );
     const customers = await getAllCustomers.execute();
 
     if (!boxNumbers) return { message: "Cannot get all box numbers" };
@@ -61,7 +68,11 @@ export class SequelizeBoxNumberRepository implements BoxNumberRepository {
     });
     if (!updatedBoxNumber) return { message: "Cannot update box number" };
 
-    return { ...updatedBoxNumber, customer: null };
+    return {
+      ...updatedBoxNumber,
+      customer: null,
+      companyid: boxNumber.dataValues.companyid,
+    };
   }
 
   async releaseBoxNumber(boxnumber: number): Promise<BoxNumber | Error> {
@@ -76,6 +87,10 @@ export class SequelizeBoxNumberRepository implements BoxNumberRepository {
     });
     if (!updatedBoxNumber) return { message: "Cannot update box number" };
 
-    return { ...updatedBoxNumber, customer: null };
+    return {
+      ...updatedBoxNumber,
+      customer: null,
+      companyid: boxNumber.dataValues.companyid,
+    };
   }
 }

@@ -2,8 +2,11 @@ import { Error } from "../entities/Error";
 import { BoxNumber } from "../entities/BoxNumber";
 
 export interface BoxNumberRepository {
-  saveBoxNumber(boxnumber: BoxNumber): Promise<BoxNumber | Error>;
-  findAllBoxNumber(): Promise<BoxNumber[] | Error>;
+  saveBoxNumber(
+    boxnumber: BoxNumber,
+    companyid: string
+  ): Promise<BoxNumber | Error>;
+  findAllBoxNumber(companyid: string): Promise<BoxNumber[] | Error>;
   findByBoxNumber(boxnumber: number): Promise<BoxNumber | Error>;
   releaseBoxNumber(boxnumber: number): Promise<BoxNumber | Error>;
   ocuppyBoxNumber(

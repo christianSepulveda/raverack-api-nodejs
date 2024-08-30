@@ -3,4 +3,5 @@ export interface Customer {
   fullname: string;
   rut: string;
   phoneNumber: string;
+  companyid: string;
 }

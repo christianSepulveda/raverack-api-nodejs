@@ -10,10 +10,11 @@ export class FindBoxNumber {
   }
 
   async execute(
-    boxNumber: number | undefined
+    boxNumber: number | undefined,
+    companyid: string | undefined
   ): Promise<BoxNumber | BoxNumber[] | Error> {
-    if (!boxNumber) {
-      const boxNumber = await this.boxNumberRepository.findAllBoxNumber();
+    if (!boxNumber && companyid) {
+      const boxNumber = await this.boxNumberRepository.findAllBoxNumber(companyid);
       return boxNumber;
     }
 

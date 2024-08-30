@@ -9,13 +9,13 @@ export class CreateBoxNumber {
     this.boxNumberRepository = boxNumberRepository;
   }
 
-  async execute(box: BoxNumber): Promise<BoxNumber | Error> {
+  async execute(box: BoxNumber, companyid: string): Promise<BoxNumber | Error> {
     if (box.boxnumber <= 0)
       return { message: "Box number should be greater than 0" };
     if (box.available === undefined)
       return { message: "Box availability is required" };
 
-    const boxNumber = await this.boxNumberRepository.saveBoxNumber(box);
+    const boxNumber = await this.boxNumberRepository.saveBoxNumber(box, companyid);
     return boxNumber;
   }
 }

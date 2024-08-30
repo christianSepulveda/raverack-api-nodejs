@@ -4,9 +4,11 @@ export interface Table {
   number: number;
   capacityId: string;
   customerId?: string | null;
+  companyid: string;
 }
 
 export interface TableInitValues {
   number: number;
   state: string;
+  companyid: string;
 }

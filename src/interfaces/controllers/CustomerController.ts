@@ -2,16 +2,13 @@ import { Request, Response } from "express";
 import { SequelizeCustomerRepository } from "../../infraestructure/repositories/sequelize/CustomerRepository";
 import { FindAllCustomers } from "../../application/use-cases/Customer/FindAllCustomers";
 import { CreateCustomer } from "../../application/use-cases/Customer/Create";
-import { FindCustomer } from "../../application/use-cases/Customer/FindCustomer";
 import { FindCustomerByRut } from "../../application/use-cases/Customer/FindCustomerByRut";
 import { UpdateCustomer } from "../../application/use-cases/Customer/UpdateCustomer";
-import { Customer } from "../../domain/entities/Customer";
 
 const customerRepository = new SequelizeCustomerRepository();
 const getAllCustomers = new FindAllCustomers(customerRepository);
 
 const createCustomer = new CreateCustomer(customerRepository);
-const findCustomer = new FindCustomer(customerRepository);
 const findCustomerByRut = new FindCustomerByRut(customerRepository);
 const updateCustomer = new UpdateCustomer(customerRepository);
 

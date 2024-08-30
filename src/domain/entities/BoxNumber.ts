@@ -6,4 +6,5 @@ export interface BoxNumber {
   customerid: string | null;
   customer: Customer | null;
   available: boolean;
+  companyid: string;
 }

@@ -6,7 +6,8 @@ class TableModel extends Model {
   public state!: string;
   public number!: number;
   public capacityId!: string;
-  public custiomerId!: string | null;
+  public customerId!: string | null;
+  public companyid!: string;
 }
 
 TableModel.init(
@@ -28,6 +29,10 @@ TableModel.init(
       type: DataTypes.STRING,
       allowNull: true,
     },
+    companyid: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    }
   },
   {
     sequelize: instance,
