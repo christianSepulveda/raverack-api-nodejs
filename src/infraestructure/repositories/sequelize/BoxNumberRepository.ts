@@ -31,7 +31,7 @@ export class SequelizeBoxNumberRepository implements BoxNumberRepository {
     const boxNumbers = allBoxNumbers.filter(
       (box) => box.companyid === companyid
     );
-    const customers = await getAllCustomers.execute();
+    const customers = await getAllCustomers.execute(companyid);
 
     if (!boxNumbers) return { message: "Cannot get all box numbers" };
 
@@ -39,26 +39,36 @@ export class SequelizeBoxNumberRepository implements BoxNumberRepository {
       response.push({
         ...box.dataValues,
         customer: customers
-          ? customers.find((customer) => customer.id === box.customerid)
+          ? customers.find(
+              (customer) => customer.id === box.dataValues.customerid
+            )
           : null,
       });
     });
 
     return response;
   }
-  async findByBoxNumber(boxnumber: number): Promise<BoxNumber | Error> {
-    const boxNumber = await BoxNumberModel.findOne({ where: { boxnumber } });
+  async findByBoxNumber(boxnumberID: string): Promise<BoxNumber | Error> {
+    const boxNumber = await BoxNumberModel.findOne({
+      where: { id: boxnumberID },
+    });
     if (!boxNumber) return { message: "Box number not found" };
 
     return boxNumber.dataValues;
   }
 
   async ocuppyBoxNumber(
-    boxnumber: number,
+    boxnumberID: string,
     customerID: string
   ): Promise<BoxNumber | Error> {
-    const boxNumber = await BoxNumberModel.findOne({ where: { boxnumber } });
+    console.log("BOX NUMBER ID",boxnumberID, customerID);
+
+    const boxNumber = await BoxNumberModel.findOne({
+      where: { id: boxnumberID },
+    });
+
     if (!boxNumber) return { message: "Box number not found" };
+
     if (!boxNumber.available)
       return { message: "Box number is already ocuppy" };
 
@@ -75,9 +85,13 @@ export class SequelizeBoxNumberRepository implements BoxNumberRepository {
     };
   }
 
-  async releaseBoxNumber(boxnumber: number): Promise<BoxNumber | Error> {
-    const boxNumber = await BoxNumberModel.findOne({ where: { boxnumber } });
+  async releaseBoxNumber(boxnumberID: string): Promise<BoxNumber | Error> {
+    const boxNumber = await BoxNumberModel.findOne({
+      where: { id: boxnumberID },
+    });
+
     if (!boxNumber) return { message: "Box number not found" };
+
     if (boxNumber.available)
       return { message: "Box number is already available" };
 

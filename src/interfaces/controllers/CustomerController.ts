@@ -15,7 +15,9 @@ const updateCustomer = new UpdateCustomer(customerRepository);
 export class CustomerController {
   async GetAllCustomers(req: Request, res: Response): Promise<void> {
     try {
-      const customers = await getAllCustomers.execute();
+      const { companyid } = req.body;
+
+      const customers = await getAllCustomers.execute(companyid);
       if (!customers) res.status(404).send({ message: "Customers not found" });
       if (customers) res.status(200).send(customers);
 
@@ -28,7 +30,8 @@ export class CustomerController {
 
   async CreateOrUpdateCustomer(req: Request, res: Response): Promise<void> {
     try {
-      const customer = await findCustomerByRut.execute(req.body.rut);
+      const { rut, companyid } = req.body;
+      const customer = await findCustomerByRut.execute(rut, companyid);
 
       if (customer) {
         const updatedCustomer = await updateCustomer.execute(req.body);

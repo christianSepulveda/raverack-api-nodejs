@@ -9,10 +9,10 @@ export class FindCustomer {
     this.customerRepository = customerRepository;
   }
 
-  async execute(id: string): Promise<Customer | Error> {
+  async execute(id: string, companyid: string): Promise<Customer | Error> {
     if (!id) return { message: "ID is required" };
 
-    const customer = await this.customerRepository.findByID(id);
+    const customer = await this.customerRepository.findByID(id, companyid);
     return customer;
   }
 }

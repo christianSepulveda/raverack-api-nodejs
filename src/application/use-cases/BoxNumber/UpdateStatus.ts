@@ -10,19 +10,19 @@ export class UpdateBoxNumberStatus {
   }
 
   async execute(
-    boxNumber: number,
+    boxnumberid: string,
     customerID?: string
   ): Promise<BoxNumber | Error> {
-    if (boxNumber && customerID) {
+    if (boxnumberid && customerID) {
       const result = await this.boxNumberRepository.ocuppyBoxNumber(
-        boxNumber,
+        boxnumberid,
         customerID
       );
       return result;
     }
 
-    if (boxNumber && !customerID) {
-      const result = await this.boxNumberRepository.releaseBoxNumber(boxNumber);
+    if (boxnumberid && !customerID) {
+      const result = await this.boxNumberRepository.releaseBoxNumber(boxnumberid);
       return result;
     }
 

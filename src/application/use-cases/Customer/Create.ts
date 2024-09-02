@@ -12,12 +12,13 @@ export class CreateCustomer {
   isValidCustomer(customer: Customer): boolean {
     if (customer.rut === undefined) return false;
     if (customer.fullname === undefined) return false;
+    if (customer.companyid === undefined) return false;
     return true;
   }
 
   async execute(customer: Customer): Promise<Customer | Error> {
     if (!this.isValidCustomer(customer))
-      return { message: "Customer rut and name are required" };
+      return { message: "Customer has empty data" };
 
     const newCustomer = await this.customerRepository.save(customer);
     return newCustomer;

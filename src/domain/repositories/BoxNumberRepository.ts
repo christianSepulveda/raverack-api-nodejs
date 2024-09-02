@@ -7,10 +7,10 @@ export interface BoxNumberRepository {
     companyid: string
   ): Promise<BoxNumber | Error>;
   findAllBoxNumber(companyid: string): Promise<BoxNumber[] | Error>;
-  findByBoxNumber(boxnumber: number): Promise<BoxNumber | Error>;
-  releaseBoxNumber(boxnumber: number): Promise<BoxNumber | Error>;
+  findByBoxNumber(boxnumberID: string): Promise<BoxNumber | Error>;
+  releaseBoxNumber(boxnumberID: string): Promise<BoxNumber | Error>;
   ocuppyBoxNumber(
-    boxnumber: number,
+    boxnumberID: string,
     customerID: string
   ): Promise<BoxNumber | Error>;
 }

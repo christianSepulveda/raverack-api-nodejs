@@ -8,8 +8,8 @@ export class FindAllCustomers {
     this.customerRepository = customerRepository;
   }
 
-  async execute(): Promise<Customer[] | null> {
-    const customers = await this.customerRepository.findAll();
+  async execute(companyid: string): Promise<Customer[] | null> {
+    const customers = await this.customerRepository.findAll(companyid);
     return customers;
   }
 }
