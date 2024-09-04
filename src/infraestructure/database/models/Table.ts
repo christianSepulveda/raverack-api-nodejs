@@ -5,8 +5,6 @@ class TableModel extends Model {
   public id!: string;
   public state!: string;
   public number!: number;
-  public capacityId!: string;
-  public customerId!: string | null;
   public companyid!: string;
 }
 
@@ -20,14 +18,6 @@ TableModel.init(
     number: {
       type: DataTypes.INTEGER,
       allowNull: false,
-    },
-    capacityId: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    customerId: {
-      type: DataTypes.STRING,
-      allowNull: true,
     },
     companyid: {
       type: DataTypes.STRING,

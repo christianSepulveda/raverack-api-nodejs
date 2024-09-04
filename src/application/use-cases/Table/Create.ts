@@ -9,20 +9,12 @@ export class CreateTable {
     this.tableRepository = tableRepository;
   }
 
-  async execute(
-    table: TableInitValues,
-    tableCapacityNumber: number
-  ): Promise<Table | Error> {
-    if (tableCapacityNumber < 1)
-      return { message: "Table capacity number must be greater than 0" };
+  async execute(table: TableInitValues): Promise<Table | Error> {
     if (table.number < 1)
       return { message: "Table number must be greater than 0" };
     if (table.state === "") return { message: "Table state must not be empty" };
 
-    const newTable = await this.tableRepository.save(
-      table,
-      tableCapacityNumber
-    );
+    const newTable = await this.tableRepository.save(table);
     return newTable;
   }
 }
