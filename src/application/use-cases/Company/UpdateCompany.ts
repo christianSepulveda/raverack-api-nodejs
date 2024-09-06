@@ -14,6 +14,8 @@ export class UpdateCompany {
     if (company.rut === undefined) return false;
     if (company.email === undefined) return false;
     if (company.phoneNumber === undefined) return false;
+    if (company.expirationDate === undefined) return false;
+    if (company.monthlyPayment === undefined) return false;
     if (company.activeReservation === undefined) return false;
     if (company.activeCustody === undefined) return false;
     if (company.active === undefined) return false;
@@ -22,7 +24,7 @@ export class UpdateCompany {
 
   async execute(company: Company): Promise<Company | Error> {
     if (!this.isValidCompany(company))
-      return { message: "Company name and address are required" };
+      return { message: "All fields are required" };
 
     const updatedCompany = await this.companyRepository.updateCompany(company);
     return updatedCompany;

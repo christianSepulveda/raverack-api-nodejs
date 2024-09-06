@@ -8,6 +8,7 @@ import authRoutes from "./interfaces/routes/AuthRoutes";
 import boxNumberRoutes from "./interfaces/routes/BoxNumberRoutes";
 import customerRoutes from "./interfaces/routes/CustomerRoutes";
 import tableRoutes from "./interfaces/routes/TableRoutes";
+import reservationRoutes from "./interfaces/routes/ReservationRoutes";
 
 dotenv.config();
 
@@ -19,6 +20,7 @@ app.use("/user", authRoutes);
 app.use("/boxnumber", boxNumberRoutes);
 app.use("/customer", customerRoutes);
 app.use("/table", tableRoutes);
+app.use("/reservation", reservationRoutes);
 
 initSequelizeServer(app, port);
 

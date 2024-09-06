@@ -7,6 +7,8 @@ class CompanyModel extends Model {
   public rut!: string;
   public phoneNumber!: string;
   public email!: string;
+  public expirationDate!: string;
+  public monthlyPayment!: number;
   public activeReservation!: boolean;
   public activeCustody!: boolean;
   public active!: boolean;
@@ -32,6 +34,14 @@ CompanyModel.init(
     },
     email: {
       type: DataTypes.STRING,
+      allowNull: false,
+    },
+    expirationDate: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    monthlyPayment: {
+      type: DataTypes.DECIMAL,
       allowNull: false,
     },
     activeReservation: {

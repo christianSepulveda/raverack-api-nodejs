@@ -4,6 +4,8 @@ export interface Company {
   rut: string;
   phoneNumber: string;
   email: string;
+  expirationDate: string;
+  monthlyPayment: number;
   activeReservation: boolean;
   activeCustody: boolean;
   active: boolean;
