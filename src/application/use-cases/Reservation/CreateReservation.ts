@@ -14,7 +14,6 @@ export class CreateReservation {
     if (reservation.time === undefined) return false;
     if (reservation.capacity === undefined) return false;
     if (reservation.customerId === undefined) return false;
-    if (reservation.tableId === undefined) return false;
     if (reservation.active === undefined) return false;
     return true;
   }

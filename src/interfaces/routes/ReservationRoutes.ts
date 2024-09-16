@@ -6,7 +6,7 @@ const router = Router();
 const reservationController = new ReservationController();
 
 router.post("/get", verifySession, reservationController.GetReservations);
-router.post("/create", verifySession, reservationController.CreateReservation);
+router.post("/create", reservationController.CreateReservation);
 router.put("/update", verifySession, reservationController.UpdateReservation);
 
 export default router;

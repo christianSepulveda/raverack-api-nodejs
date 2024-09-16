@@ -1,5 +1,4 @@
 import { v4 } from "uuid";
-import { Error } from "../../domain/entities/Error";
 import { Request, Response } from "express";
 
 import { SequelizeReservationRepository } from "../../infraestructure/repositories/sequelize/ReservationRepository";
@@ -14,6 +13,7 @@ import { UpdateCustomer } from "../../application/use-cases/Customer/UpdateCusto
 import { Reservation } from "../../domain/entities/Reservation";
 
 import { Customer } from "../../domain/entities/Customer";
+import SendEmail from "../config/send-email";
 const customerRepository = new SequelizeCustomerRepository();
 const createCustomer = new CreateCustomer(customerRepository);
 const findCustomerByRut = new FindCustomerByRut(customerRepository);
@@ -25,90 +25,67 @@ const createReservation = new CreateReservation(reservationRepository);
 const updateReservation = new UpdateReservation(reservationRepository);
 
 export class ReservationController {
+  constructor() {
+    this.CreateReservation = this.CreateReservation.bind(this);
+    this.GetReservations = this.GetReservations.bind(this);
+    this.UpdateReservation = this.UpdateReservation.bind(this);
+    this.updateExistingCustomer = this.updateExistingCustomer.bind(this);
+    this.createNewCustomer = this.createNewCustomer.bind(this);
+    this.createReservationForCustomer =
+      this.createReservationForCustomer.bind(this);
+    this.sendReservationConfirmationEmail =
+      this.sendReservationConfirmationEmail.bind(this);
+  }
+
   async CreateReservation(req: Request, res: Response): Promise<void> {
     try {
       const { fullname, rut, phone, email, date, time, capacity, companyid } =
         req.body;
 
       const customer = await findCustomerByRut.execute(rut, companyid);
+      let customerData =
+        customer && customer.id
+          ? await this.updateExistingCustomer(customer, phone, email)
+          : await this.createNewCustomer(
+              fullname,
+              rut,
+              phone,
+              email,
+              companyid
+            );
 
-      if (customer && customer.id) {
-        await updateCustomer.execute({
-          email,
-          phoneNumber: phone,
-          companyid: customer.companyid,
-          fullname: customer.fullname,
-          rut: customer.rut,
-        });
-
-        const reservation: Reservation = {
-          id: "",
-          date,
-          time,
-          capacity,
-          customerId: customer.id,
-          companyId: companyid,
-          active: true,
-        };
-
-        const newReservation = (await createReservation.execute(
-          reservation
-        )) as Reservation & Error;
-
-        if (newReservation.message) {
-          res.status(500).send(newReservation);
-          return;
-        }
-
-        res.status(200).send(newReservation);
+      if ("message" in customerData) {
+        res.status(500).send(customerData);
         return;
       }
 
-      const newCustomer = (await createCustomer.execute({
-        fullname,
-        rut,
-        phoneNumber: phone,
-        email,
-        companyid,
-      })) as Customer & Error;
-
-      if (newCustomer.message) {
-        res.status(500).send(newCustomer);
-        return;
-      }
-
-      if (newCustomer && newCustomer.id) {
-        const reservation: Reservation = {
-          id: v4(),
+      if (customerData && customerData.id) {
+        const reservation = await this.createReservationForCustomer(
+          customerData.id,
           date,
           time,
           capacity,
-          customerId: newCustomer.id,
-          companyId: companyid,
-          active: true,
-        };
+          companyid
+        );
 
-        const newReservation = (await createReservation.execute(
-          reservation
-        )) as Reservation & Error;
-
-        if (newReservation.message) {
-          res.status(500).send(newReservation);
+        if ("message" in reservation) {
+          res.status(500).send(reservation);
           return;
         }
 
-        res.status(200).send(newReservation);
-        return;
+        await this.sendReservationConfirmationEmail({...customerData, email}, reservation);
+        res.status(200).send(reservation);
       }
     } catch (error: any) {
-      console.log(error);
+      console.error(error);
       res.status(500).send("Server error");
     }
   }
 
   async GetReservations(req: Request, res: Response): Promise<void> {
     try {
-      const { id, companyid } = req.params;
+      const { id, companyid } = req.body;
+      console.log(req.body);
       const reservation = await findReservation.execute(id, companyid);
 
       if (!reservation)
@@ -136,5 +113,97 @@ export class ReservationController {
       console.log(error);
       res.status(500).send("Server error");
     }
+  }
+
+  async updateExistingCustomer(
+    customer: Customer,
+    phone: string,
+    email: string
+  ) {
+    await updateCustomer.execute({
+      email,
+      phoneNumber: phone,
+      companyid: customer.companyid,
+      fullname: customer.fullname,
+      rut: customer.rut,
+    });
+    return customer;
+  }
+
+  async createNewCustomer(
+    fullname: string,
+    rut: string,
+    phone: string,
+    email: string,
+    companyid: string
+  ) {
+    return await createCustomer.execute({
+      id: v4(),
+      fullname,
+      rut,
+      phoneNumber: phone,
+      email,
+      companyid,
+    });
+  }
+
+  async createReservationForCustomer(
+    customerId: string,
+    date: Date,
+    time: string,
+    capacity: number,
+    companyid: string
+  ) {
+    const reservation: Reservation = {
+      id: v4(),
+      date,
+      time,
+      capacity,
+      customerId,
+      companyId: companyid,
+      active: true,
+    };
+    return await createReservation.execute(reservation);
+  }
+
+  async sendReservationConfirmationEmail(
+    customer: Customer,
+    reservation: Reservation
+  ) {
+    const formattedDate = new Date(reservation.date).toLocaleDateString(
+      "es-ES",
+      {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      }
+    );
+
+    await SendEmail({
+      to: [{ email: customer.email ?? "", name: customer.fullname ?? "" }],
+      sender: {
+        email: "christiandev30@gmail.com",
+        name: "Christian desde RaveRack",
+      },
+      htmlContent: `
+        <html>
+          <body>
+            <h1>Hola ${customer.fullname ?? ""},</h1>
+            <p>Nos complace informar que tu reserva ha sido agendada correctamente.</p>
+            <p>Detalles de la reserva:</p>
+            <ul>
+              <li><strong>Fecha:</strong> ${formattedDate}</li>
+              <li><strong>Hora:</strong> ${reservation.time}</li>
+              <li><strong>Número de Personas:</strong> ${
+                reservation.capacity
+              }</li>
+            </ul>
+            <p>Gracias por confiar en nosotros.</p>
+            <p>¡Saludos!</p>
+          </body>
+        </html>
+      `,
+      subject: "¡Tu reserva está lista!",
+    });
   }
 }

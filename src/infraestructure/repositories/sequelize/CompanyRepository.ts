@@ -29,4 +29,12 @@ export class SequelizeCompanyRepository implements CompanyRepository {
 
     return company;
   }
+
+  findAll(): Promise<Company[]> {
+    return CompanyModel.findAll();
+  }
+
+  findByID(id: string): Promise<Company | null> {
+    return CompanyModel.findByPk(id);
+  }
 }

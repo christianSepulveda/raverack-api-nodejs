@@ -7,11 +7,12 @@ class ReservationModel extends Model {
   public time!: string;
   public capacity!: number;
   public customerId!: string;
-  public tableId!: string;
+  public companyId!: string;
   public active!: boolean;
 }
 
-ReservationModel.init(  {
+ReservationModel.init(
+  {
     id: {
       type: DataTypes.STRING,
       primaryKey: true,
@@ -32,7 +33,7 @@ ReservationModel.init(  {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    tableId: {
+    companyId: {
       type: DataTypes.STRING,
       allowNull: false,
     },

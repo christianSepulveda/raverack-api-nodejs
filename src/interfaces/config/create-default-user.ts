@@ -21,6 +21,8 @@ export default async function CreateDefaultUser() {
     active: true,
     activeCustody: true,
     activeReservation: true,
+    expirationDate: "2100-01-01",
+    monthlyPayment: 0,
   };
 
   const company = await createCompany.execute(defaultCompany);
