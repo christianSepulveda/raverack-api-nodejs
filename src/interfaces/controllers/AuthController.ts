@@ -12,8 +12,8 @@ const updateStatus = new UpdateStatus(userRepository);
 export class AuthController {
   async Register(req: Request, res: Response): Promise<void> {
     try {
-      const { username, password } = req.body;
-      const user = await registUser.execute(username, password);
+      const { username, password, companyid } = req.body;
+      const user = await registUser.execute(username, password, companyid);
 
       if (!user) res.status(401).send({ error: "Invalid credentials" });
       if (user) res.status(200).send([user]);

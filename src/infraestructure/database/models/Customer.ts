@@ -5,6 +5,9 @@ class CustomerModel extends Model {
   public id!: string;
   public fullname!: string;
   public rut!: string;
+  public phonenumber!: string;
+  public email!: string;
+  public companyid!: string;
 }
 
 CustomerModel.init(
@@ -18,6 +21,18 @@ CustomerModel.init(
       allowNull: false,
     },
     rut: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    phonenumber: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    email: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    companyid: {
       type: DataTypes.STRING,
       allowNull: false,
     },

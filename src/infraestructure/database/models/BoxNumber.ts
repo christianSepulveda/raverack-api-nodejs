@@ -6,6 +6,7 @@ class BoxNumberModel extends Model {
   public boxnumber!: number;
   public customerid!: string | null;
   public available!: boolean;
+  public companyid!: string;
 }
 
 BoxNumberModel.init(
@@ -24,6 +25,10 @@ BoxNumberModel.init(
     },
     available: {
       type: DataTypes.BOOLEAN,
+      allowNull: false,
+    },
+    companyid: {
+      type: DataTypes.STRING,
       allowNull: false,
     },
   },

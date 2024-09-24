@@ -30,6 +30,7 @@ export class BoxNumberController {
   async CreateBoxesNumbers(req: Request, res: Response): Promise<void> {
     try {
       const numberOfBoxes = req.body.numberOfBoxes;
+      const companyId = req.body.companyid;
 
       if (!numberOfBoxes || numberOfBoxes < 1) {
         res.status(400).json([{ error: "Invalid number of boxes" }]);
@@ -37,7 +38,8 @@ export class BoxNumberController {
       }
 
       const currentBoxes = (await findBoxNumber.execute(
-        undefined
+        undefined,
+        companyId
       )) as BoxNumber[];
       const numberOfCurrentBoxes = currentBoxes.length;
 
@@ -49,9 +51,10 @@ export class BoxNumberController {
           available: true,
           customerid: null,
           customer: null,
+          companyid: req.body.companyid,
         };
 
-        await createBoxNumber.execute(boxNumber);
+        await createBoxNumber.execute(boxNumber, req.body.companyid);
       }
 
       res.status(200).json([{ created: true, added: numberOfBoxes }]);
@@ -63,32 +66,34 @@ export class BoxNumberController {
 
   async GetBoxNumber(req: Request, res: Response): Promise<void> {
     try {
-      const boxNumber = req.body.boxNumber;
+      const boxNumberId = req.body.boxnumberid;
+      const companyId = req.body.companyid;
 
-      if (!boxNumber) {
-        const boxNumbers = await findBoxNumber.execute(undefined);
+      if (!boxNumberId) {
+        const boxNumbers = await findBoxNumber.execute(undefined, companyId);
         res.status(200).json(boxNumbers);
         return;
       }
 
-      if (boxNumber) {
-        const boxNumbers = (await findBoxNumber.execute(
-          Number(boxNumber)
+      if (boxNumberId) {
+        const boxNumber = (await findBoxNumber.execute(
+          boxNumberId,
+          undefined
         )) as BoxNumber & Error;
 
-        if (boxNumbers.message) {
+        if (boxNumber.message) {
           res.status(404).json([{ error: boxNumber.message }]);
           return;
         }
 
-        if (boxNumbers.id) {
+        if (boxNumber.id) {
           const customer = (await findCustomer.execute(
-            boxNumbers.customerid as string
+            boxNumber.customerid as string, companyId
           )) as Customer & Error;
 
           res.status(200).json([
             {
-              ...boxNumbers,
+              ...boxNumber,
               customer: customer.message ? null : customer,
             },
           ]);
@@ -103,25 +108,26 @@ export class BoxNumberController {
 
   async UpdateBoxNumberStatus(req: Request, res: Response): Promise<void> {
     try {
-      const { fullname, rut, boxNumber } = req.body;
+      const { fullname, rut, boxnumberid, companyid } = req.body;
       let newCustomer = {} as Customer;
 
-      console.log(fullname, rut, boxNumber);
+      if (!boxnumberid) res.status(400).json([{ error: "Invalid data" }]);
 
-      if (!boxNumber)
-        res.status(400).json([{ error: "Invalid data" }]);
+      const customer = await findCustomerByRut.execute(rut, companyid);
 
-      const customer = await findCustomerByRut.execute(rut);
       if (!customer) {
         newCustomer = (await createCustomer.execute({
           id: uuidv4(),
           fullname,
           rut,
+          phoneNumber: "",
+          companyid,
         })) as Customer;
       }
 
       const currentBoxNumber = (await findBoxNumber.execute(
-        Number(boxNumber)
+        boxnumberid,
+        undefined
       )) as BoxNumber & Error;
 
       if (currentBoxNumber.message) {
@@ -132,11 +138,16 @@ export class BoxNumberController {
       const customerId = customer ? customer.id : newCustomer.id;
 
       await updateBoxNumberStatus.execute(
-        boxNumber,
+        boxnumberid,
         !currentBoxNumber.available ? undefined : customerId
       );
 
-      res.status(200).json([{ updatedBoxNumber: boxNumber, released : !currentBoxNumber.available }]);
+      res.status(200).json([
+        {
+          updatedBoxNumber: currentBoxNumber.boxnumber,
+          released: !currentBoxNumber.available,
+        },
+      ]);
     } catch (error: any) {
       console.log(error);
       res.status(500);

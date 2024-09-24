@@ -27,7 +27,11 @@ export class RegisterUser {
       return { message: "Password should be at least 8 characters" };
   }
 
-  async execute(username: string, password: string): Promise<User | Error> {
+  async execute(
+    username: string,
+    password: string,
+    companyid: string
+  ): Promise<User | Error> {
     const usernameError = this.checkUsername(username);
     const passwordError = this.checkPassword(password);
 
@@ -40,6 +44,7 @@ export class RegisterUser {
       username,
       password: hashedPassword,
       active: true,
+      companyid,
     };
 
     const newUser = await this.userRepository.save(user);

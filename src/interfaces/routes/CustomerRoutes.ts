@@ -5,6 +5,11 @@ import verifySession from "../middlewares/verifySession";
 const router = Router();
 const customerController = new CustomerController();
 
-router.get("/all", verifySession, customerController.GetAllCustomers);
+router.post("/all", verifySession, customerController.GetAllCustomers);
+router.put(
+  "/create-update",
+  verifySession,
+  customerController.CreateOrUpdateCustomer
+);
 
 export default router;

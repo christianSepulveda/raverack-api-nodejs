@@ -24,7 +24,9 @@ export class AuthUser {
     const passwordMatch = await bcrypt.compare(password, user.password);
     if (!passwordMatch) return { message: "Invalid password" };
 
-    const token = jwt.sign({ id: user.id }, secret, { expiresIn: "8h" });
+    const token = jwt.sign({ ...user, password: "good try brother" }, secret, {
+      expiresIn: "8h",
+    });
 
     return token;
   }

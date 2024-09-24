@@ -13,6 +13,7 @@ export class SequelizeUserRepository implements UserRepository {
       username: user.username,
       password: user.password,
       active: user.active,
+      companyid: user.companyid,
     };
   }
 
