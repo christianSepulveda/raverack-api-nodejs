@@ -18,8 +18,8 @@ export class SequelizeCustomerRepository implements CustomerRepository {
     return customer.dataValues;
   }
 
-  async findAll(customerID: string): Promise<Customer[]> {
-    const customers = await CustomerModel.findAll({ where: { customerID } });
+  async findAll(companyid: string): Promise<Customer[]> {
+    const customers = await CustomerModel.findAll({ where: { companyid } });
     if (customers.length === 0) return [] as Customer[];
 
     return customers.map((customer) => customer.dataValues);
