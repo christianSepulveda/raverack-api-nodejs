@@ -11,8 +11,8 @@ export class SequelizeCustomerRepository implements CustomerRepository {
     return customer.dataValues;
   }
 
-  async findByRut(rut: string): Promise<Customer | null> {
-    const customer = await CustomerModel.findOne({ where: { rut } });
+  async findByRut(rut: string, companyid: string): Promise<Customer | null> {
+    const customer = await CustomerModel.findOne({ where: { rut, companyid } });
     if (!customer) return null;
 
     return customer.dataValues;
@@ -36,7 +36,7 @@ export class SequelizeCustomerRepository implements CustomerRepository {
   }
 
   async save(customer: Customer): Promise<Customer | Error> {
-    const customerExists = await this.findByRut(customer.rut);
+    const customerExists = await this.findByRut(customer.rut, customer.companyid);
     if (customerExists) return customerExists;
 
     const newCustomer = await CustomerModel.create({ ...customer });

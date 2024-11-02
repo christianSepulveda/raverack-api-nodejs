@@ -10,6 +10,13 @@ const instance = new Sequelize(
   {
     host: process.env.DB_HOST!,
     dialect: "postgres",
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false // Puedes ajustar esto según tus necesidades de seguridad
+      }
+    },
+    logging: false,
   }
 );
 
